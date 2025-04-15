@@ -1,7 +1,6 @@
-mod scanner;
-mod token;
+use crate::scanner::Scanner;
 
-fn run_prompt() {
+pub fn run_prompt() {
   loop {
     let mut input = String::new();
     println!("Enter a command (or 'exit' to quit):");
@@ -11,6 +10,12 @@ fn run_prompt() {
       continue;
     } else if input == "exit" {
       break;
+    }
+
+    let mut scanner = Scanner::new(input.clone(), 1);
+    let tokens = scanner.scan_tokens();
+    for token in tokens {
+      println!("{}", token.to_string());
     }
   }
 }
