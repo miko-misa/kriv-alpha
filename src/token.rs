@@ -42,19 +42,18 @@ pub enum TokenType {
 }
 
 #[derive(Debug, Clone)]
-pub enum Object {
+pub enum LiteralObject {
   Text(String), // Ensure this variant is used in your code or remove it if unnecessary
   Number(f64),
   Bool(bool),
   Nil,
-  None,
 }
 
 #[derive(Clone)]
 pub struct Token {
   token_type: TokenType,
   lexeme: String,
-  literal: Object,
+  literal: Option<LiteralObject>,
   line: usize,
   start: usize,
 }
@@ -63,7 +62,7 @@ impl Token {
   pub fn new(
     token_type: TokenType,
     lexeme: String,
-    literal: Object,
+    literal: Option<LiteralObject>,
     line: usize,
     start: usize,
   ) -> Self {
@@ -77,9 +76,18 @@ impl Token {
   }
 
   pub fn to_string(&self) -> String {
+    let literal = match &self.literal {
+      Some(literal) => match literal {
+        LiteralObject::Text(text) => format!("\"{}\"", text),
+        LiteralObject::Number(num) => num.to_string(),
+        LiteralObject::Bool(b) => b.to_string(),
+        LiteralObject::Nil => "nil".to_string(),
+      },
+      None => "None".to_string(),
+    };
     format!(
       "Token {{ type: {:?}, lexeme: {}, literal: {:?} }}",
-      self.token_type, self.lexeme, self.literal,
+      self.token_type, self.lexeme, literal,
     )
   }
 }

@@ -1,4 +1,4 @@
-use crate::token::{Object, Token, TokenType};
+use crate::token::{LiteralObject, Token, TokenType};
 
 pub struct Scanner {
   source: String,
@@ -27,7 +27,7 @@ impl Scanner {
     self.tokens.push(Token::new(
       TokenType::Eof,
       String::new(),
-      Object::None,
+      None,
       self.line,
       self.start,
     ));
@@ -141,10 +141,10 @@ impl Scanner {
   }
 
   fn add_token(&mut self, token_type: TokenType) {
-    self.add_token_with_literal(token_type, Object::None);
+    self.add_token_with_literal(token_type, None);
   }
 
-  fn add_token_with_literal(&mut self, token_type: TokenType, literal: Object) {
+  fn add_token_with_literal(&mut self, token_type: TokenType, literal: Option<LiteralObject>) {
     let text = &self.source[self.start..self.current];
     self.tokens.push(Token::new(
       token_type,
@@ -168,7 +168,10 @@ impl Scanner {
     }
     self.advance();
     let value = &self.source[self.start + 1..self.current - 1];
-    self.add_token_with_literal(TokenType::String, Object::Text(value.to_string()));
+    self.add_token_with_literal(
+      TokenType::String,
+      Some(LiteralObject::Text(value.to_string())),
+    );
   }
 
   fn number(&mut self) {
@@ -183,7 +186,7 @@ impl Scanner {
     }
     let value = &self.source[self.start..self.current];
     let number: f64 = value.parse().unwrap();
-    self.add_token_with_literal(TokenType::Number, Object::Number(number));
+    self.add_token_with_literal(TokenType::Number, Some(LiteralObject::Number(number)));
   }
 
   fn identifier(&mut self) {
@@ -211,7 +214,7 @@ impl Scanner {
       _ => TokenType::Identifier,
     };
     if token_type == TokenType::Nil {
-      self.add_token_with_literal(token_type, Object::Nil);
+      self.add_token_with_literal(token_type, Some(LiteralObject::Nil));
       return;
     }
     self.add_token(token_type);
