@@ -1,34 +1,34 @@
 use crate::token::{LiteralObject, Token};
 
-pub trait Expr {
-  fn accept(&self, visitor: &mut dyn Visitor) -> LiteralObject;
+pub trait Expr<T> {
+  fn accept(&self, visitor: &mut dyn Visitor<T>) -> T;
 }
 
-pub trait Visitor {
-  fn visit_binary_expr(&self, expr: &BinaryExpr) -> LiteralObject;
-  fn visit_grouping_expr(&self, expr: &GroupingExpr) -> LiteralObject;
-  fn visit_literal_expr(&self, expr: &LiteralExpr) -> LiteralObject;
-  fn visit_unary_expr(&self, expr: &UnaryExpr) -> LiteralObject;
+pub trait Visitor<T> {
+  fn visit_binary_expr(&mut self, expr: &BinaryExpr<T>) -> T;
+  fn visit_grouping_expr(&mut self, expr: &GroupingExpr<T>) -> T;
+  fn visit_literal_expr(&mut self, expr: &LiteralExpr) -> T;
+  fn visit_unary_expr(&mut self, expr: &UnaryExpr<T>) -> T;
 }
 
-pub struct BinaryExpr {
-  pub left: Box<dyn Expr>,
+pub struct BinaryExpr<T> {
+  pub left: Box<dyn Expr<T>>,
   pub operator: Token,
-  pub right: Box<dyn Expr>,
+  pub right: Box<dyn Expr<T>>,
 }
 
-impl Expr for BinaryExpr {
-  fn accept(&self, visitor: &mut dyn Visitor) -> LiteralObject {
+impl<T> Expr<T> for BinaryExpr<T> {
+  fn accept(&self, visitor: &mut dyn Visitor<T>) -> T {
     visitor.visit_binary_expr(self)
   }
 }
 
-pub struct GroupingExpr {
-  pub expression: Box<dyn Expr>,
+pub struct GroupingExpr<T> {
+  pub expression: Box<dyn Expr<T>>,
 }
 
-impl Expr for GroupingExpr {
-  fn accept(&self, visitor: &mut dyn Visitor) -> LiteralObject {
+impl<T> Expr<T> for GroupingExpr<T> {
+  fn accept(&self, visitor: &mut dyn Visitor<T>) -> T {
     visitor.visit_grouping_expr(self)
   }
 }
@@ -37,19 +37,19 @@ pub struct LiteralExpr {
   pub value: LiteralObject,
 }
 
-impl Expr for LiteralExpr {
-  fn accept(&self, visitor: &mut dyn Visitor) -> LiteralObject {
+impl<T> Expr<T> for LiteralExpr {
+  fn accept(&self, visitor: &mut dyn Visitor<T>) -> T {
     visitor.visit_literal_expr(self)
   }
 }
 
-pub struct UnaryExpr {
+pub struct UnaryExpr<T> {
   pub operator: Token,
-  pub right: Box<dyn Expr>,
+  pub right: Box<dyn Expr<T>>,
 }
 
-impl Expr for UnaryExpr {
-  fn accept(&self, visitor: &mut dyn Visitor) -> LiteralObject {
+impl<T> Expr<T> for UnaryExpr<T> {
+  fn accept(&self, visitor: &mut dyn Visitor<T>) -> T {
     visitor.visit_unary_expr(self)
   }
 }

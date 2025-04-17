@@ -13,18 +13,18 @@ impl Parser {
     Parser { current: 0, tokens }
   }
 
-  pub fn parse(&mut self) -> Box<dyn Expr> {
+  pub fn parse<T: 'static>(&mut self) -> Box<dyn Expr<T>> {
     match self.expression() {
       Ok(expr) => expr,
       Err(err) => panic!("Parse error: {}", err),
     }
   }
 
-  fn expression(&mut self) -> Result<Box<dyn Expr>, String> {
+  fn expression<T: 'static>(&mut self) -> Result<Box<dyn Expr<T>>, String> {
     self.equality()
   }
 
-  fn equality(&mut self) -> Result<Box<dyn Expr>, String> {
+  fn equality<T: 'static>(&mut self) -> Result<Box<dyn Expr<T>>, String> {
     let mut expr = self.comparison()?;
 
     while self.match_tokens(&[TokenType::BangEqual, TokenType::EqualEqual]) {
@@ -40,7 +40,7 @@ impl Parser {
     Ok(expr)
   }
 
-  fn comparison(&mut self) -> Result<Box<dyn Expr>, String> {
+  fn comparison<T: 'static>(&mut self) -> Result<Box<dyn Expr<T>>, String> {
     let mut expr = self.term()?;
 
     while self.match_tokens(&[
@@ -61,7 +61,7 @@ impl Parser {
     Ok(expr)
   }
 
-  fn term(&mut self) -> Result<Box<dyn Expr>, String> {
+  fn term<T: 'static>(&mut self) -> Result<Box<dyn Expr<T>>, String> {
     let mut expr = self.factor()?;
 
     while self.match_tokens(&[TokenType::Minus, TokenType::Plus]) {
@@ -77,7 +77,7 @@ impl Parser {
     Ok(expr)
   }
 
-  fn factor(&mut self) -> Result<Box<dyn Expr>, String> {
+  fn factor<T: 'static>(&mut self) -> Result<Box<dyn Expr<T>>, String> {
     let mut expr = self.unary()?;
 
     while self.match_tokens(&[TokenType::Slash, TokenType::Star]) {
@@ -93,7 +93,7 @@ impl Parser {
     Ok(expr)
   }
 
-  fn unary(&mut self) -> Result<Box<dyn Expr>, String> {
+  fn unary<T: 'static>(&mut self) -> Result<Box<dyn Expr<T>>, String> {
     if self.match_tokens(&[TokenType::Bang, TokenType::Minus]) {
       let operator = self.previous().clone();
       let right = self.unary()?;
@@ -103,7 +103,7 @@ impl Parser {
     self.primary()
   }
 
-  fn primary(&mut self) -> Result<Box<dyn Expr>, String> {
+  fn primary<T: 'static>(&mut self) -> Result<Box<dyn Expr<T>>, String> {
     if self.match_tokens(&[TokenType::False]) {
       return Ok(Box::new(LiteralExpr {
         value: LiteralObject::Bool(false),

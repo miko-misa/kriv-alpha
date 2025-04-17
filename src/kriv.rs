@@ -1,4 +1,4 @@
-use crate::scanner::Scanner;
+use crate::{ast_printer::AstPrinter, parser::Parser, scanner::Scanner};
 
 pub fn run_prompt() {
   loop {
@@ -14,8 +14,9 @@ pub fn run_prompt() {
 
     let mut scanner = Scanner::new(input.clone(), 1);
     let tokens = scanner.scan_tokens();
-    for token in tokens {
-      println!("{}", token.to_string());
-    }
+    let parser = Parser::new(tokens).parse::<String>();
+    let mut printer = AstPrinter {};
+    let result = printer.print(parser.as_ref());
+    println!("{}", result);
   }
 }
