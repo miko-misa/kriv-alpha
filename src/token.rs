@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum TokenType {
   LeftParen,
@@ -41,12 +43,23 @@ pub enum TokenType {
   Eof,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum LiteralObject {
   Text(String), // Ensure this variant is used in your code or remove it if unnecessary
   Number(f64),
   Bool(bool),
   Nil,
+}
+
+impl fmt::Display for LiteralObject {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      LiteralObject::Text(s) => write!(f, "{}", s),
+      LiteralObject::Number(n) => write!(f, "{}", n),
+      LiteralObject::Bool(b) => write!(f, "{}", b),
+      LiteralObject::Nil => write!(f, "nil"),
+    }
+  }
 }
 
 #[derive(Clone)]

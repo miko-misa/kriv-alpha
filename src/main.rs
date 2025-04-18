@@ -9,5 +9,5 @@ pub mod token;
 
 fn main() {
   print!("Hello, Kriv!\n");
-  kriv::run_prompt();
+  let _ = kriv::start_prompt();
 }

@@ -48,6 +48,8 @@ impl Parser {
       TokenType::GreaterEqual,
       TokenType::Less,
       TokenType::LessEqual,
+      TokenType::And,
+      TokenType::Or,
     ]) {
       let operator = self.previous().clone();
       let right = self.term()?;
